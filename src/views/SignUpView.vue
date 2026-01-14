@@ -25,5 +25,7 @@ const handleRegister = (data: AuthCredentials) => {
 </script>
 
 <template>
-  <AuthForm type="register" :isLoading="isLoading" :error="errorMessage" @submit="handleRegister" />
+  <div class="w-full h-screen flex items-center justify-center">
+    <AuthForm type="register" :isLoading="isLoading" :error="errorMessage" @submit="handleRegister" />
+  </div>
 </template>

@@ -25,5 +25,7 @@ const handleLogin = (data: AuthCredentials) => {
 </script>
 
 <template>
-  <AuthForm type="login" :isLoading="isLoading" :error="errorMessage" @submit="handleLogin" />
+  <div class="w-full h-screen flex items-center justify-center">
+    <AuthForm type="login" :isLoading="isLoading" :error="errorMessage" @submit="handleLogin" />
+  </div>
 </template>

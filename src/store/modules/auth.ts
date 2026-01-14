@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     userName.value = params.username;
     localStorage.setItem('token', data.token);
 
-    router.push('/cinemas');
+    router.push({ name: 'Фильмы' });
   };
 
   const {
@@ -53,7 +53,6 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     token.value = null;
     localStorage.removeItem('token');
-    router.push('/login');
   };
 
   return {

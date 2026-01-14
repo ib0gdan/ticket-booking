@@ -1,1 +1,11 @@
 @import 'tailwindcss';
+
+button {
+  @apply cursor-pointer;
+}
+
+button:disabled {
+  @apply cursor-not-allowed;
+  @apply bg-gray-500;
+  @apply text-gray-50;
+}

@@ -24,15 +24,17 @@ const menuItems = computed(() => {
   return items;
 });
 
-const isActive = (routeName: string) => {
-  return route.name === routeName;
+const isActive = (itemPath: string) => {
+  if (itemPath === '/') {
+    return route.path === '/';
+  }
+  return route.path.startsWith(itemPath);
 };
 </script>
 
 <template>
   <div class="flex w-full h-screen bg-gray-50">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white shadow-xl flex flex-col z-10 transition-all duration-300">
+    <aside class="w-64 bg-white shadow-sm flex flex-col z-10 transition-all duration-300">
       <div class="p-6 border-b border-gray-100">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -47,15 +49,14 @@ const isActive = (routeName: string) => {
         <ul class="space-y-1">
           <li v-for="item in menuItems" :key="item.name?.toString()">
             <router-link :to="{ name: item.name }"
-              class="group relative flex items-center px-4 py-3 text-sm font-medium transition-all duration-200" :class="[
-                isActive(item.name?.toString() || '')
+              class="relative flex items-center px-4 py-3 text-sm font-medium transition-all duration-200" :class="[
+                isActive(item.path)
                   ? '  border-blue-600 text-blue-600'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               ]">
 
               {{ item.name }}
-              <span v-if="isActive(item.name?.toString() || '')"
-                class="absolute right-0 h-9.5 w-1 bg-[#026EB7] rounded-l-full"></span>
+              <span v-if="isActive(item.path)" class="absolute right-0 h-9.5 w-1 bg-[#026EB7] rounded-l-full"></span>
             </router-link>
           </li>
         </ul>
@@ -77,10 +78,8 @@ const isActive = (routeName: string) => {
       </div>
     </aside>
 
-    <main class="flex-1 relative overflow-hidden flex flex-col">
-      <div class="flex flex-col w-full h-full items-center justify-center">
-        <router-view></router-view>
-      </div>
+    <main class="flex-1 relative overflow-auto bg-white min-h-full flex flex-col ">
+      <router-view></router-view>
     </main>
   </div>
 </template>

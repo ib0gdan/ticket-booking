@@ -1,7 +1,5 @@
-<script lang="ts"></script>
 <template>
   <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-    <!-- Loading Spinner -->
     <svg class="h-5 w-5 animate-spin text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
       <path class="opacity-75" fill="currentColor"

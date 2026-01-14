@@ -6,6 +6,7 @@ export interface Movie {
   description: string;
   year: number;
   lengthMinutes: number;
+  formattedLength: string;
   posterImage: string;
   rating: number;
 }
