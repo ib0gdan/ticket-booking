@@ -3,11 +3,15 @@ import { computed } from 'vue';
 import {
   ArrowRightEndOnRectangleIcon,
   ArrowRightStartOnRectangleIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from '@heroicons/vue/24/outline';
 
 const iconMap = {
-  login: ArrowRightEndOnRectangleIcon,
-  logout: ArrowRightStartOnRectangleIcon,
+  in: ArrowRightEndOnRectangleIcon,
+  out: ArrowRightStartOnRectangleIcon,
+  eye: EyeIcon,
+  eyeSlash: EyeSlashIcon,
 } as const;
 
 export type IconName = keyof typeof iconMap;

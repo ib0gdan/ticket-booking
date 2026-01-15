@@ -7,6 +7,8 @@ const SignUpView = () => import('@/views/SignUpView.vue');
 const CinemasView = () => import('@/views/CinemasView.vue');
 const CinemaDetailsView = () => import('@/views/CinemaDetailsView.vue');
 const MoviesView = () => import('@/views/MoviesView.vue');
+const BookingView = () => import('@/views/BookingView.vue');
+const MyTicketsView = () => import('@/views/MyTicketsView.vue');
 
 const routes: RouteRecordRaw[] = [
   {
@@ -51,7 +53,19 @@ const routes: RouteRecordRaw[] = [
         meta: { hidden: true },
         props: true,
       },
-
+      {
+        path: '/movies/:id/sessions/:sessionId',
+        name: 'Букинг',
+        component: BookingView,
+        meta: { hidden: true },
+        props: true,
+      },
+      {
+        path: '/my-tickets',
+        name: 'Мои билеты',
+        component: MyTicketsView,
+        meta: { showInMenu: true, requiresAuth: true },
+      },
       {
         path: '',
         redirect: { name: 'Фильмы' },
@@ -75,6 +89,7 @@ router.beforeEach((to, _from, next) => {
   const isAuthenticated = authStore.isAuthenticated;
 
   const publicOnly = to.matched.some((record) => record.meta.publicOnly);
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
   if (to.name === 'NotFound') {
     return next({ name: 'Кинотеатры' });
@@ -82,6 +97,10 @@ router.beforeEach((to, _from, next) => {
 
   if (publicOnly && isAuthenticated) {
     return next({ name: 'Кинотеатры' });
+  }
+
+  if (requiresAuth && !isAuthenticated) {
+    return next({ name: 'Войти' });
   }
 
   next();

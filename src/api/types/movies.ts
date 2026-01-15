@@ -11,10 +11,15 @@ export interface Movie {
   rating: number;
 }
 
+export interface Seat {
+  rowNumber: number;
+  seatNumber: number;
+}
+
 export interface MovieSession extends Session {
   seats: {
     rows: number;
     seatsPerRow: number;
   };
-  bookedSeats: number[];
+  bookedSeats: Seat[];
 }

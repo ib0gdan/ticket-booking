@@ -12,20 +12,26 @@ const { isLoading, error } = storeToRefs(authStore);
 
 const errorMessage = computed(() => {
   if (!error.value) return '';
-  if (error.value instanceof AxiosError) return error.value.response?.data?.message || 'Registration failed';
+  if (error.value instanceof AxiosError)
+    return error.value.response?.data?.message || 'Registration failed';
   return String(error.value);
 });
 
 const handleRegister = (data: AuthCredentials) => {
   register({
     username: data.username,
-    password: data.password
+    password: data.password,
   });
 };
 </script>
 
 <template>
   <div class="w-full h-screen flex items-center justify-center">
-    <AuthForm type="register" :isLoading="isLoading" :error="errorMessage" @submit="handleRegister" />
+    <AuthForm
+      type="register"
+      :isLoading="isLoading"
+      :error="errorMessage"
+      @submit="handleRegister"
+    />
   </div>
 </template>

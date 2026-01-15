@@ -1,6 +1,4 @@
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="flex w-full h-screen max-w-md m-auto bg-gray-50">

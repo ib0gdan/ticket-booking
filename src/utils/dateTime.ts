@@ -18,6 +18,10 @@ export const formatTime = (date: string | Date): string => {
   return `${hours}:${minutes}`;
 };
 
+export const formatSessionTime = (date: string | Date): string => {
+  return `${formatDateShort(date)}, ${formatTime(date)}`;
+};
+
 export const minsToHours = (value: number): string => {
   const hours = Math.floor(value / 60);
   const minutes = value % 60;

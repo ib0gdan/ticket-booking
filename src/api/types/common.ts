@@ -2,5 +2,5 @@ export interface Session {
   id: number;
   movieId: number;
   cinemaId: number;
-  startTime: Date;
+  startTime: string;
 }

@@ -12,14 +12,15 @@ const { isLoading, error } = storeToRefs(authStore);
 
 const errorMessage = computed(() => {
   if (!error.value) return '';
-  if (error.value instanceof AxiosError) return error.value.response?.data?.message || 'Login failed';
+  if (error.value instanceof AxiosError)
+    return error.value.response?.data?.message || 'Login failed';
   return String(error.value);
 });
 
 const handleLogin = (data: AuthCredentials) => {
   login({
     username: data.username,
-    password: data.password
+    password: data.password,
   });
 };
 </script>
