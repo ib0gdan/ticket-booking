@@ -1,6 +1,8 @@
 import instance from '@/api/clients/axios.client';
 
-export const settingsApi = {
-  getSettings: (): Promise<{ bookingPaymentTimeSeconds: number }> =>
-    instance.get('/settings').then((res) => res.data),
-};
+export class SettingsService {
+  static async getSettings(): Promise<{ bookingPaymentTimeSeconds: number }> {
+    const response = await instance.get('/settings');
+    return response.data;
+  }
+}

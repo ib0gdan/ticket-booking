@@ -3,16 +3,16 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuery } from '@tanstack/vue-query';
 import queryClient from '@/api/clients/query.client';
-import { CinemaService } from '@/api/services';
+import { MovieService } from '@/api/services';
 import { formatDateShort, formatTime } from '@/utils/dateTime';
 import type { Session, Movie, Cinema } from '@/api/types';
 import Loader from '@/components/common/Loader.vue';
 
 const route = useRoute();
-const cinemaId = Number(route.params.id);
+const movieId = Number(route.params.id);
 
-const cinema = (queryClient.getQueryData(['cinema', cinemaId]) as Cinema) || {};
-const movies = (queryClient.getQueryData(['movies']) as Movie[]) || [];
+const cinemas = (queryClient.getQueryData(['cinemas']) as Cinema[]) || [];
+const movie = (queryClient.getQueryData(['movie', movieId]) as Movie) || {};
 
 const {
   isPending,
@@ -20,20 +20,20 @@ const {
   data: sessions,
   error,
 } = useQuery({
-  queryKey: ['cinema-sessions', cinemaId],
+  queryKey: ['movie-sessions', movieId],
   queryFn: async () => {
-    const sessions = await CinemaService.getSessionsByCinemaId(cinemaId);
+    const sessions = await MovieService.getSessionsByMovieId(movieId);
     const data = sessions.filter((session) => new Date(session.startTime) >= new Date());
 
     return data;
   },
-  enabled: !!cinemaId,
+  enabled: !!movieId,
 });
 
 const groupedSessions = computed(() => {
-  if (!sessions.value || !movies.length) return {};
+  if (!sessions.value || !cinemas.length) return {};
 
-  const groups: Record<string, { movie: Movie; sessions: Session[] }[]> = {};
+  const groups: Record<string, { cinema: Cinema; sessions: Session[] }[]> = {};
 
   const sortedSessions = [...sessions.value].sort(
     (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
@@ -41,22 +41,22 @@ const groupedSessions = computed(() => {
 
   sortedSessions.forEach((session) => {
     const dateKey = formatDateShort(session.startTime);
-    const movie = movies?.find((m) => m.id === session.movieId);
+    const cinema = cinemas?.find((m) => m.id === session.cinemaId);
 
-    if (!movie) return;
+    if (!cinema) return;
 
     if (!groups[dateKey]) {
       groups[dateKey] = [];
     }
 
-    let movieGroup = groups[dateKey].find((g) => g.movie.id === movie.id);
+    let cinemaGroup = groups[dateKey].find((g) => g.cinema.id === cinema.id);
 
-    if (!movieGroup) {
-      movieGroup = { movie, sessions: [] };
-      groups[dateKey].push(movieGroup);
+    if (!cinemaGroup) {
+      cinemaGroup = { cinema, sessions: [] };
+      groups[dateKey].push(cinemaGroup);
     }
 
-    movieGroup.sessions.push(session);
+    cinemaGroup.sessions.push(session);
   });
 
   return groups;
@@ -74,9 +74,26 @@ const groupedSessions = computed(() => {
     </div>
 
     <div v-else>
-      <div class="text-center mb-16">
-        <h1 class="text-3xl font-light tracking-wide mb-2">{{ cinema.name }}</h1>
-        <p class="text-gray-500 text-sm font-light">{{ cinema.address }}</p>
+      <h1 class="text-3xl text-center font-light tracking-wide mb-10">{{ movie.title }}</h1>
+      <div class="flex gap-6 mb-16">
+        <div class="h-40 w-30 overflow-hidden rounded-md bg-gray-100 shrink-0 justify-center">
+          <img
+            v-if="movie.posterImage"
+            :src="movie.posterImage"
+            :alt="movie.title"
+            class="h-full w-full object-cover object-center"
+          />
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm font-light mb-5">{{ movie.description }}</p>
+          <p class="text-gray-500 text-sm font-light">Год: {{ movie.year }}</p>
+          <p class="text-gray-500 text-sm font-light">
+            Продолжительность: {{ movie.formattedLength }}
+          </p>
+          <p class="text-gray-500 text-sm font-light flex gap-1 items-center">
+            Рейтинг: {{ movie.rating }}
+          </p>
+        </div>
       </div>
 
       <div class="space-y-16">
@@ -88,26 +105,16 @@ const groupedSessions = computed(() => {
           <div class="space-y-12">
             <div
               v-for="group in moviesGroup"
-              :key="group.movie.id"
+              :key="group.cinema.id"
               class="flex flex-col md:flex-row gap-8 items-start"
             >
               <div class="flex items-center gap-6 md:w-1/2">
-                <div
-                  class="h-16 w-12 overflow-hidden rounded-md bg-gray-100 shrink-0 justify-center"
-                >
-                  <img
-                    v-if="group.movie.posterImage"
-                    :src="group.movie.posterImage"
-                    :alt="group.movie.title"
-                    class="h-full w-full object-cover object-center"
-                  />
-                </div>
-                <span class="text-lg font-light">{{ group.movie.title }}</span>
+                <span class="text-lg font-light">{{ group.cinema.name }}</span>
               </div>
 
               <div class="flex flex-wrap gap-3 md:w-1/2">
                 <router-link
-                  :to="{ name: 'Букинг', params: { id: group.movie.id, sessionId: session.id } }"
+                  :to="{ name: 'Букинг', params: { id: group.cinema.id, sessionId: session.id } }"
                   v-for="session in group.sessions"
                   :key="session.id"
                   class="px-4 py-2 border border-gray-300 rounded text-sm hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-200"

@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router';
 import { useMutation } from '@tanstack/vue-query';
 import { ref, computed } from 'vue';
 
-import { authApi } from '@/api/services';
+import { AuthService } from '@/api/services';
 import { type AuthResponse, type AuthCredentials } from '@/api/types';
 
 export type AuthContext = {
@@ -28,7 +28,12 @@ export const useAuthStore = defineStore('auth', () => {
     userName.value = params.username;
     localStorage.setItem('token', data.token);
 
-    router.push({ name: 'Фильмы' });
+    const redirect = router.currentRoute.value.query.redirect;
+    if (redirect) {
+      router.push(redirect as string);
+    } else {
+      router.push({ name: 'Фильмы' });
+    }
   };
 
   const {
@@ -36,7 +41,8 @@ export const useAuthStore = defineStore('auth', () => {
     error: loginMutationError,
     isPending: isLoginPending,
   } = useMutation({
-    mutationFn: ({ username, password }: AuthCredentials) => authApi.login({ username, password }),
+    mutationFn: ({ username, password }: AuthCredentials) =>
+      AuthService.login({ username, password }),
     onSuccess,
   });
 
@@ -46,13 +52,16 @@ export const useAuthStore = defineStore('auth', () => {
     isPending: isRegisterPending,
   } = useMutation({
     mutationFn: ({ username, password }: AuthCredentials) =>
-      authApi.register({ username, password }),
+      AuthService.register({ username, password }),
     onSuccess: onSuccess,
   });
 
   const logout = () => {
     token.value = null;
     localStorage.removeItem('token');
+    if (router.currentRoute.value.meta.requiresAuth) {
+      router.push({ name: 'Фильмы' });
+    }
   };
 
   return {

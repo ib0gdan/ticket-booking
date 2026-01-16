@@ -3,31 +3,30 @@ import { ref } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
 import queryClient from '@/api/clients/query.client';
-import { movieSessionApi } from '@/api/services';
+import { MovieSessionService } from '@/api/services';
 import type { Cinema, Movie, Seat } from '@/api/types';
 import Loader from '@/components/common/Loader.vue';
 import SeatsSchema from '@/components/booking/SeatsSchema.vue';
 import { formatSessionTime } from '@/utils/dateTime';
 import { useBookingStore } from '@/store/modules/booking';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const sessionId = Number(route.params.sessionId);
 
-const movies = (queryClient.getQueryData(['movies']) as Movie[]) || [];
-const cinemas = (queryClient.getQueryData(['cinemas']) as Cinema[]) || [];
-
 const selectedSeats = ref<Seat[]>([]);
 
 const bookingStore = useBookingStore();
-const { bookSeats, bookSeatsMutationError, isBookSeatsPending } = bookingStore;
+const { isBookSeatsPending } = storeToRefs(bookingStore);
 
 const { isPending, data, error } = useQuery({
   queryKey: ['sessionDetails', sessionId],
-  queryFn: () => movieSessionApi.getMovieSessions(sessionId),
+  queryFn: () => MovieSessionService.getMovieSessions(sessionId),
+  staleTime: 1000 * 60 * 30,
   select: (session) => ({
     ...session,
-    movieTitle: (movies.find((movie) => movie.id === session.movieId) as Movie).title,
-    cinemaName: (cinemas.find((cinema) => cinema.id === session.cinemaId) as Cinema).name,
+    movieTitle: (queryClient.getQueryData(['movie', session.movieId]) as Movie).title,
+    cinemaName: (queryClient.getQueryData(['cinema', session.cinemaId]) as Cinema).name,
   }),
 });
 </script>
@@ -51,9 +50,7 @@ const { isPending, data, error } = useQuery({
       <Loader />
     </div>
 
-    <div v-else-if="error || bookSeatsMutationError" class="text-red-500 mt-4 text-center">
-      Ошибка: {{ error?.message || bookSeatsMutationError?.message }}
-    </div>
+    <div v-else-if="error" class="text-red-500 mt-4 text-center">Ошибка: {{ error?.message }}</div>
 
     <div v-else-if="data" class="flex flex-col items-center gap-6">
       <SeatsSchema
@@ -66,10 +63,11 @@ const { isPending, data, error } = useQuery({
 
     <div class="flex justify-center">
       <button
-        class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:border-gray-900 hover:text-gray-900"
-        :disabled="selectedSeats.length === 0"
-        @click="bookSeats({ movieSessionId: sessionId, seats: selectedSeats })"
+        class="flex items-center gap-2 px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:border-gray-900 hover:text-gray-900"
+        :disabled="selectedSeats.length === 0 || isBookSeatsPending"
+        @click="bookingStore.bookSeats({ movieSessionId: sessionId, seats: selectedSeats })"
       >
+        <Loader v-if="isBookSeatsPending" size="sm" color="white" />
         Забронировать
       </button>
     </div>

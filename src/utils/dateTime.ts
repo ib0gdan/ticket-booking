@@ -1,6 +1,3 @@
-/**
- * Formats a date string or object into a short date string (e.g., "24.07")
- */
 export const formatDateShort = (date: string | Date): string => {
   const d = new Date(date);
   const day = d.getDate().toString().padStart(2, '0');
@@ -8,9 +5,6 @@ export const formatDateShort = (date: string | Date): string => {
   return `${day}.${month}`;
 };
 
-/**
- * Formats a date string or object into a time string (e.g., "15:30")
- */
 export const formatTime = (date: string | Date): string => {
   const d = new Date(date);
   const hours = d.getHours().toString().padStart(2, '0');

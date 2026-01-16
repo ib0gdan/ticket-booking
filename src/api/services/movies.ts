@@ -1,8 +1,13 @@
 import instance from '@/api/clients/axios.client';
 import type { Movie, Session } from '../types';
 
-export const moviesApi = {
-  getAll: (): Promise<Movie[]> => instance.get('/movies').then((res) => res.data),
-  getSessionsByMovieId: (id: number): Promise<Session[]> =>
-    instance.get(`/movies/${id}/sessions`).then((res) => res.data),
-};
+export class MovieService {
+  static async getAll(): Promise<Movie[]> {
+    const response = await instance.get('/movies');
+    return response.data;
+  }
+  static async getSessionsByMovieId(id: number): Promise<Session[]> {
+    const response = await instance.get(`/movies/${id}/sessions`);
+    return response.data;
+  }
+}

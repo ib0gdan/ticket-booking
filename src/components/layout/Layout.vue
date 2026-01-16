@@ -11,8 +11,6 @@ const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
 const { logout } = authStore;
 
-// Dynamically get menu items from the router configuration
-// We look for the root route '/' and its children
 const menuItems = computed(() => {
   const rootRoute = router.options.routes.find((r) => r.path === '/');
   const items = rootRoute?.children?.filter((child) => child.name && !child.meta?.hidden) || [];
@@ -49,7 +47,7 @@ const isActive = (itemPath: string) => {
           <li v-for="item in menuItems" :key="item.name?.toString()">
             <router-link
               :to="{ name: item.name }"
-              class="relative flex items-center px-4 py-3 text-sm font-medium transition-all duration-200"
+              class="relative flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200"
               :class="[
                 isActive(item.path)
                   ? '  border-blue-600 text-blue-600'
@@ -77,7 +75,7 @@ const isActive = (itemPath: string) => {
       </div>
       <div v-else class="p-4 border-t border-gray-100">
         <router-link
-          to="/login"
+          :to="{ name: 'Войти', query: { redirect: route.path } }"
           class="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200"
         >
           <BaseIcon name="in" />

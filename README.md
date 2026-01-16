@@ -1,5 +1,74 @@
-# Vue 3 + TypeScript + Vite
+# Ticket Booking App
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Приложение для бронирования билетов в кино, разработанное на Vue 3 + TypeScript + Vite.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Требования
+
+- Node.js (рекомендуется LTS версия)
+- Yarn (пакетный менеджер)
+
+## Установка
+
+1. Клонируйте репозиторий
+2. Установите зависимости:
+
+```bash
+yarn install
+```
+
+## Настройка окружения
+
+Проект использует переменные окружения. Пример файла конфигурации находится в `.env.development`.
+Основная переменная:
+
+- `VITE_API_BASE_URL` - URL API сервера (по умолчанию `http://localhost:3022`)
+
+## Запуск
+
+### Режим разработки
+
+Запуск dev-сервера с горячей перезагрузкой (HMR):
+
+```bash
+yarn dev
+```
+
+### Сборка для продакшена
+
+Сборка приложения с проверкой типов:
+
+```bash
+yarn build
+```
+
+### Предпросмотр сборки
+
+Запуск локального сервера для проверки собранного приложения:
+
+```bash
+yarn preview
+```
+
+## Линтинг и Форматирование
+
+Запуск ESLint для проверки и исправления ошибок:
+
+```bash
+yarn lint
+```
+
+Форматирование кода с помощью Prettier:
+
+```bash
+yarn format
+```
+
+## Стек технологий
+
+- **Vue 3** (Composition API)
+- **TypeScript**
+- **Vite**
+- **Pinia**
+- **TanStack Query**
+- **Tailwind CSS**
+- **Axios**

@@ -13,3 +13,8 @@ export interface BookingDetails {
 export interface ExtraInfoBookingDetails extends BookingDetails {
   startTime: string;
 }
+
+export interface BookSeatsRequest {
+  movieSessionId: number;
+  seats: Seat[];
+}

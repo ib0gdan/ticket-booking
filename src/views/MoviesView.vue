@@ -2,17 +2,8 @@
 import queryClient from '@/api/clients/query.client';
 import TableView, { type Column } from '@/components/common/TableView.vue';
 import type { Movie } from '@/api/types';
-import { minsToHours } from '@/utils/dateTime';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const movies = (queryClient.getQueryData(['movies']) as Movie[]) || [];
-
-const formattedMovies = movies.map((movie) => ({
-  ...movie,
-  formattedLength: minsToHours(movie.lengthMinutes),
-  posterImage: BASE_URL + movie.posterImage,
-}));
 
 const columns: Column<Movie>[] = [
   { key: 'posterImage', header: '#', span: 1, type: 'image', align: 'center' },
@@ -27,7 +18,7 @@ const columns: Column<Movie>[] = [
   <div class="w-full p-8 max-w-5xl mx-auto">
     <h1 class="text-2xl font-bold text-gray-900 mb-8">Фильмы</h1>
 
-    <TableView :data="formattedMovies || []" :columns="columns">
+    <TableView :data="movies" :columns="columns">
       <template #cell-id="{ item }">
         <router-link
           :to="{ name: 'Фильм', params: { id: item.id } }"

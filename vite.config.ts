@@ -9,10 +9,6 @@ export default defineConfig(({ mode }) => {
     plugins: [vue(), tailwindcss()],
     server: {
       proxy: {
-        // '/views': {
-        //   target: env.VITE_API_BASE_URL,
-        //   changeOrigin: true,
-        // },
         '/api': {
           target: env.VITE_API_BASE_URL,
           changeOrigin: true,

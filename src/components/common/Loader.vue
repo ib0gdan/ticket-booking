@@ -3,7 +3,7 @@ import { computed } from 'vue';
 
 const { size, color } = defineProps<{
   size?: 'sm' | 'md' | 'lg';
-  color?: 'blue' | 'gray';
+  color?: 'blue' | 'gray' | 'white';
 }>();
 
 const sizeClass = computed(() => {
@@ -23,6 +23,8 @@ const colorClass = computed(() => {
       return 'border-blue-100';
     case 'gray':
       return 'border-gray-900';
+    case 'white':
+      return 'border-white';
     default:
       return 'border-gray-900';
   }

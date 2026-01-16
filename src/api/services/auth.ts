@@ -1,10 +1,19 @@
 import instance from '@/api/clients/axios.client';
-import type { AuthCredentials, AuthResponse } from '../types';
+import type { AuthCredentials, AuthResponse, BookingDetails } from '../types';
 
-export const authApi = {
-  login: ({ username, password }: AuthCredentials): Promise<AuthResponse> =>
-    instance.post('/login', { username, password }).then((res) => res.data),
+export class AuthService {
+  static async login({ username, password }: AuthCredentials): Promise<AuthResponse> {
+    const response = await instance.post('/login', { username, password });
+    return response.data;
+  }
 
-  register: ({ username, password }: AuthCredentials): Promise<AuthResponse> =>
-    instance.post('/register', { username, password }).then((res) => res.data),
-};
+  static async register({ username, password }: AuthCredentials): Promise<AuthResponse> {
+    const response = await instance.post('/register', { username, password });
+    return response.data;
+  }
+
+  static async getBookings(): Promise<BookingDetails[]> {
+    const response = await instance.get('/me/bookings');
+    return response.data;
+  }
+}

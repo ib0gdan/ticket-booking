@@ -1,7 +1,9 @@
 import instance from '@/api/clients/axios.client';
 import type { MovieSession } from '../types';
 
-export const movieSessionApi = {
-  getMovieSessions: (movieSessionId: number): Promise<MovieSession> =>
-    instance.get(`/movieSessions/${movieSessionId}`).then((res) => res.data),
-};
+export class MovieSessionService {
+  static async getMovieSessions(movieSessionId: number): Promise<MovieSession> {
+    const response = await instance.get(`/movieSessions/${movieSessionId}`);
+    return response.data;
+  }
+}

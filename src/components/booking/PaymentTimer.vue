@@ -17,7 +17,7 @@ watch(
   () => isExpired.value,
   (value) => {
     if (value) {
-      emit('expired');
+      setTimeout(() => emit('expired'), 600);
     }
   }
 );

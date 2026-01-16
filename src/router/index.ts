@@ -7,6 +7,7 @@ const SignUpView = () => import('@/views/SignUpView.vue');
 const CinemasView = () => import('@/views/CinemasView.vue');
 const CinemaDetailsView = () => import('@/views/CinemaDetailsView.vue');
 const MoviesView = () => import('@/views/MoviesView.vue');
+const MovieDetailsView = () => import('@/views/MovieDetailsView.vue');
 const BookingView = () => import('@/views/BookingView.vue');
 const MyTicketsView = () => import('@/views/MyTicketsView.vue');
 
@@ -36,7 +37,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/movies/:id',
         name: 'Фильм',
-        component: MoviesView,
+        component: MovieDetailsView,
         meta: { hidden: true },
         props: true,
       },
@@ -100,7 +101,7 @@ router.beforeEach((to, _from, next) => {
   }
 
   if (requiresAuth && !isAuthenticated) {
-    return next({ name: 'Войти' });
+    return next({ name: 'Войти', query: { redirect: to.path } });
   }
 
   next();

@@ -106,6 +106,7 @@ const validateField = (field: string) => {
             class="relative block w-full rounded-lg border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
             placeholder="Введите имя пользователя"
             @blur="validateField('username')"
+            @change="validateField('username')"
           />
           <p v-if="fieldErrors.username" class="mt-1 text-sm text-red-500">
             {{ fieldErrors.username }}
@@ -123,7 +124,7 @@ const validateField = (field: string) => {
               :type="showPassword ? 'text' : 'password'"
               class="block w-full rounded-lg border border-gray-300 px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
               placeholder="Введите пароль"
-              @blur="validateField('password')"
+              @change="validateField('password')"
             />
             <button
               type="button"
@@ -152,6 +153,7 @@ const validateField = (field: string) => {
               class="block w-full rounded-lg border border-gray-300 px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
               placeholder="Повторите пароль"
               @blur="validateField('passwordConfirmation')"
+              @change="validateField('passwordConfirmation')"
             />
             <button
               type="button"
