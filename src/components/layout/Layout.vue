@@ -2,7 +2,7 @@
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useAuthStore } from '@/store/modules/auth';
+import { useAuthStore } from '@/store/auth';
 import BaseIcon from '../common/BaseIcon.vue';
 
 const router = useRouter();

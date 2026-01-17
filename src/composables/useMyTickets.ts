@@ -10,7 +10,7 @@ import type {
   ExtraInfoBookingDetails,
 } from '@/api/types';
 
-export function useMyTickets() {
+export const useMyTickets = () => {
   const {
     isPending: isBookingsPending,
     data: bookingsData,
@@ -132,7 +132,6 @@ export function useMyTickets() {
     unpaidBookings,
     futureBookings,
     pastBookings,
-    movieSessionsMap,
 
     payBooking,
     handleExpired,
@@ -140,4 +139,4 @@ export function useMyTickets() {
     getCinemaNameByBooking,
     refetchBookings,
   };
-}
+};

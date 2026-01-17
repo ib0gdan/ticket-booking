@@ -1,201 +1,177 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { z } from 'zod';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
 import {
   loginSchema,
   registerSchema,
   type LoginCredentials,
   type RegisterInput,
-} from '@/utils/schemas/authSchema';
+} from '@/utils/schemas/auth.schema';
 import Loader from '../common/Loader.vue';
 import BaseIcon from '../common/BaseIcon.vue';
-interface Props {
+
+interface AuthFormProps {
   type: 'login' | 'register';
   isLoading: boolean;
   error?: string | null;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<AuthFormProps>();
 
 const emit = defineEmits<{
   (e: 'submit', data: LoginCredentials | RegisterInput): void;
 }>();
 
-const username = ref('');
-const password = ref('');
-const passwordConfirmation = ref('');
-const fieldErrors = ref<Record<string, string>>({});
 const showPassword = ref(false);
 const showPasswordConfirmation = ref(false);
 
-const title = computed(() => (props.type === 'login' ? 'Вход' : 'Регистрация'));
-
-const buttonText = computed(() => {
-  if (props.isLoading) return props.type === 'login' ? 'Вход...' : 'Регистрация...';
-  return props.type === 'login' ? 'Войти' : 'Зарегистрироваться';
+const validationSchema = computed(() => {
+  return toTypedSchema(props.type === 'login' ? loginSchema : registerSchema);
 });
 
-const handleSubmit = () => {
-  fieldErrors.value = {};
+const { handleSubmit, errors, defineField, meta } = useForm<LoginCredentials | RegisterInput>({
+  validationSchema,
+  initialValues: {
+    username: '',
+    password: '',
+    passwordConfirmation: '',
+  },
+});
 
-  const data = {
-    username: username.value,
-    password: password.value,
-    ...(props.type === 'register' ? { passwordConfirmation: passwordConfirmation.value } : {}),
-  };
+const [username, usernameAttrs] = defineField('username');
+const [password, passwordAttrs] = defineField('password');
+const [passwordConfirmation, passwordConfirmationAttrs] = defineField('passwordConfirmation');
 
-  try {
-    const schema = props.type === 'login' ? loginSchema : registerSchema;
-    schema.parse(data);
-    emit('submit', data);
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      err.issues.forEach((e) => {
-        if (e.path.length > 0) {
-          fieldErrors.value[String(e.path[0])] = e.message;
-        }
-      });
-    }
-  }
-};
-
-const validateField = (field: string) => {
-  const data = {
-    username: username.value,
-    password: password.value,
-    ...(props.type === 'register' ? { passwordConfirmation: passwordConfirmation.value } : {}),
-  };
-
-  const schema = props.type === 'login' ? loginSchema : registerSchema;
-  const result = schema.safeParse(data);
-
-  if (!result.success) {
-    const issue = result.error.issues.find((i) => i.path[0] === field);
-    if (issue) {
-      fieldErrors.value[field] = issue.message;
-    } else {
-      delete fieldErrors.value[field];
-    }
-  } else {
-    fieldErrors.value = {};
-  }
-};
+const onSubmit = handleSubmit((values) => {
+  emit('submit', values);
+});
 </script>
 
 <template>
-  <div class="max-w-md w-full space-y-8 p-8">
+  <div class="max-w-md w-full p-8 rounded-xl shadow-lg">
     <div class="text-center">
-      <h2 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">
-        {{ title }}
+      <h2 class="text-3xl font-bold tracking-tight text-gray-900 mt-2">
+        {{ props.type === 'login' ? 'Вход' : 'Регистрация' }}
       </h2>
     </div>
 
-    <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
-      <div class="space-y-4">
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 mb-1"
-            >Имя пользователя</label
-          >
-          <input
-            id="username"
-            v-model="username"
-            autocomplete="username"
-            name="username"
-            type="text"
-            class="relative block w-full rounded-lg border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
-            placeholder="Введите имя пользователя"
-            @blur="validateField('username')"
-            @change="validateField('username')"
-          />
-          <p v-if="fieldErrors.username" class="mt-1 text-sm text-red-500">
-            {{ fieldErrors.username }}
-          </p>
-        </div>
-
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
-          <div class="relative">
-            <input
-              id="password"
-              v-model="password"
-              autocomplete="current-password"
-              name="password"
-              :type="showPassword ? 'text' : 'password'"
-              class="block w-full rounded-lg border border-gray-300 px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
-              placeholder="Введите пароль"
-              @change="validateField('password')"
-            />
-            <button
-              type="button"
-              class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              @click="showPassword = !showPassword"
-            >
-              <BaseIcon :name="showPassword ? 'eyeSlash' : 'eye'" />
-            </button>
-          </div>
-          <p v-if="fieldErrors.password" class="mt-1 text-sm text-red-500">
-            {{ fieldErrors.password }}
-          </p>
-        </div>
-
-        <div v-if="type === 'register'">
-          <label for="passwordConfirmation" class="block text-sm font-medium text-gray-700 mb-1"
-            >Подтвердите пароль</label
-          >
-          <div class="relative">
-            <input
-              id="passwordConfirmation"
-              v-model="passwordConfirmation"
-              autocomplete="confirm-password"
-              name="passwordConfirmation"
-              :type="showPasswordConfirmation ? 'text' : 'password'"
-              class="block w-full rounded-lg border border-gray-300 px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
-              placeholder="Повторите пароль"
-              @blur="validateField('passwordConfirmation')"
-              @change="validateField('passwordConfirmation')"
-            />
-            <button
-              type="button"
-              class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              @click="showPasswordConfirmation = !showPasswordConfirmation"
-            >
-              <BaseIcon :name="showPasswordConfirmation ? 'eyeSlash' : 'eye'" />
-            </button>
-          </div>
-          <p v-if="fieldErrors.passwordConfirmation" class="mt-1 text-sm text-red-500">
-            {{ fieldErrors.passwordConfirmation }}
-          </p>
-        </div>
-      </div>
-
-      <div v-if="error" class="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">
-        {{ error }}
+    <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+          Имя пользователя
+        </label>
+        <input
+          id="username"
+          v-model="username"
+          v-bind="usernameAttrs"
+          autocomplete="username"
+          type="text"
+          class="relative block w-full rounded-lg border px-3 py-3 text-gray-900 placeholder-gray-500 text-sm"
+          :class="[
+            errors.username
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
+          ]"
+          placeholder="Введите имя пользователя"
+        />
+        <p v-if="errors.username" class="mt-1 text-sm text-red-500">
+          {{ errors.username }}
+        </p>
       </div>
 
       <div>
-        <button
-          type="submit"
-          :disabled="isLoading || Object.keys(fieldErrors).length > 0"
-          class="relative flex w-full justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
-          :class="isLoading ? 'gap-2' : ''"
-        >
-          <span v-if="isLoading" class="flex gap-2 items-center">
-            <Loader size="sm" color="blue" />
-          </span>
-          {{ buttonText }}
-        </button>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1"> Пароль </label>
+        <div class="relative">
+          <input
+            id="password"
+            v-model="password"
+            v-bind="passwordAttrs"
+            autocomplete="current-password"
+            :type="showPassword ? 'text' : 'password'"
+            class="w-full rounded-lg border px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 text-sm"
+            :class="[
+              errors.password
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
+            ]"
+            placeholder="Введите пароль"
+          />
+          <button
+            type="button"
+            class="absolute inset-y-0 right-3 text-gray-400 hover:text-gray-600"
+            @click="showPassword = !showPassword"
+            tabindex="-1"
+          >
+            <BaseIcon :name="showPassword ? 'eyeSlash' : 'eye'" class="w-5 h-5" />
+          </button>
+        </div>
+        <p v-if="errors.password" class="mt-1 text-sm text-red-500">
+          {{ errors.password }}
+        </p>
       </div>
+
+      <div v-if="props.type === 'register'">
+        <label for="passwordConfirmation" class="block text-sm font-medium text-gray-700 mb-1">
+          Подтвердите пароль
+        </label>
+        <div class="relative">
+          <input
+            id="passwordConfirmation"
+            v-model="passwordConfirmation"
+            v-bind="passwordConfirmationAttrs"
+            autocomplete="new-password"
+            :type="showPasswordConfirmation ? 'text' : 'password'"
+            class="block w-full rounded-lg border px-3 py-3 pr-10 text-gray-900 placeholder-gray-500 focus:z-10 focus:outline-none focus:ring-1 sm:text-sm transition-colors duration-200"
+            :class="[
+              errors.passwordConfirmation
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
+            ]"
+            placeholder="Повторите пароль"
+          />
+          <button
+            type="button"
+            class="absolute inset-y-0 right-3 text-gray-400 hover:text-gray-600"
+            @click="showPasswordConfirmation = !showPasswordConfirmation"
+            tabindex="-1"
+          >
+            <BaseIcon :name="showPasswordConfirmation ? 'eyeSlash' : 'eye'" class="w-5 h-5" />
+          </button>
+        </div>
+        <p v-if="errors.passwordConfirmation" class="mt-1 text-sm text-red-500">
+          {{ errors.passwordConfirmation }}
+        </p>
+      </div>
+
+      <div
+        v-if="props.error"
+        class="text-red-600 text-sm text-center bg-red-50 p-3 rounded-lg border border-red-100"
+      >
+        {{ props.error }}
+      </div>
+
+      <button
+        type="submit"
+        :disabled="isLoading || !meta.valid"
+        class="flex w-full justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500"
+      >
+        <span v-if="isLoading">
+          <Loader size="sm" color="white" />
+        </span>
+        {{ props.type === 'login' ? 'Войти' : 'Зарегистрироваться' }}
+      </button>
 
       <div class="flex gap-1 justify-center text-center text-sm">
         <span class="text-gray-500">
-          {{ type === 'login' ? 'Нет аккаунта?' : 'Уже есть аккаунт?' }}
+          {{ props.type === 'login' ? 'Нет аккаунта?' : 'Уже есть аккаунт?' }}
         </span>
         <RouterLink
-          :to="type === 'login' ? '/signup' : '/login'"
-          class="font-medium text-blue-600 hover:text-blue-500"
+          :to="props.type === 'login' ? '/signup' : '/login'"
+          class="font-medium text-blue-600 hover:text-blue-500 transition-colors"
         >
-          {{ type === 'login' ? 'Зарегистрироваться' : 'Войти' }}
+          {{ props.type === 'login' ? 'Зарегистрироваться' : 'Войти' }}
         </RouterLink>
       </div>
     </form>

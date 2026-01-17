@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useAuthStore } from '@/store/modules/auth';
+import { useAuthStore } from '@/store/auth';
 import { storeToRefs } from 'pinia';
 import { AxiosError } from 'axios';
 import AuthForm from '@/components/auth/AuthForm.vue';

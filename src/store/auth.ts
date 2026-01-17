@@ -1,21 +1,12 @@
-import { defineStore } from 'pinia';
-import { useRouter } from 'vue-router';
-import { useMutation } from '@tanstack/vue-query';
 import { ref, computed } from 'vue';
+import { defineStore } from 'pinia';
+import { useMutation } from '@tanstack/vue-query';
+import router from '@/router';
 
 import { AuthService } from '@/api/services';
 import { type AuthResponse, type AuthCredentials } from '@/api/types';
 
-export type AuthContext = {
-  logout: () => void;
-  register: () => void;
-  login: (credentials: AuthCredentials) => Promise<void>;
-  error: string | null;
-};
-
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter();
-
   const userName = ref<string | null>(null);
   const token = ref<string | null>(localStorage.getItem('token'));
 

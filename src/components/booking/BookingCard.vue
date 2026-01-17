@@ -24,10 +24,6 @@ const emit = defineEmits<{
     class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-gray-200 rounded-lg px-4 py-3"
   >
     <div class="space-y-1 text-sm">
-      <div class="font-medium text-gray-900">Бронь №{{ booking.id }}</div>
-      <div class="text-gray-700">
-        Дата бронирования: {{ formatSessionTime(booking.bookedAt) }}
-      </div>
       <div class="text-gray-700">Кино: {{ movieTitle }}</div>
       <div class="text-gray-700">Кинотеатр: {{ cinemaName }}</div>
       <div v-if="startTime" class="text-gray-700">

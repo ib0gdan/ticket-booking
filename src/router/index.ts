@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
-import { useAuthStore } from '@/store/modules/auth';
+import { useAuthStore } from '@/store/auth';
 import Layout from '@/components/layout/Layout.vue';
 
 const LoginView = () => import('@/views/LoginView.vue');

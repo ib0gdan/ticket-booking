@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useMutation } from '@tanstack/vue-query';
 import queryClient from '@/api/clients/query.client';
+
 import { BookingService } from '@/api/services/booking';
 import type { BookSeatsRequest } from '@/api/types';
 
-export const useBookingStore = defineStore('booking', () => {
+export const useBooking = () => {
   const router = useRouter();
 
   const { mutate: bookSeatsMutate, isPending: isBookSeatsPending } = useMutation({
@@ -24,4 +24,4 @@ export const useBookingStore = defineStore('booking', () => {
     bookSeats: bookSeatsMutate,
     isBookSeatsPending,
   };
-});
+};

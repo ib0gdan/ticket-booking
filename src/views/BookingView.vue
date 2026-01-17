@@ -3,21 +3,20 @@ import { ref } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
 import queryClient from '@/api/clients/query.client';
+import { useBooking } from '@/composables/useBooking';
 import { MovieSessionService } from '@/api/services';
 import type { Cinema, Movie, Seat } from '@/api/types';
+import { formatSessionTime } from '@/utils/dateTime';
+
 import Loader from '@/components/common/Loader.vue';
 import SeatsSchema from '@/components/booking/SeatsSchema.vue';
-import { formatSessionTime } from '@/utils/dateTime';
-import { useBookingStore } from '@/store/modules/booking';
-import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const sessionId = Number(route.params.sessionId);
 
 const selectedSeats = ref<Seat[]>([]);
 
-const bookingStore = useBookingStore();
-const { isBookSeatsPending } = storeToRefs(bookingStore);
+const { bookSeats, isBookSeatsPending } = useBooking();
 
 const { isPending, data, error } = useQuery({
   queryKey: ['sessionDetails', sessionId],
@@ -65,7 +64,7 @@ const { isPending, data, error } = useQuery({
       <button
         class="flex items-center gap-2 px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:border-gray-900 hover:text-gray-900"
         :disabled="selectedSeats.length === 0 || isBookSeatsPending"
-        @click="bookingStore.bookSeats({ movieSessionId: sessionId, seats: selectedSeats })"
+        @click="bookSeats({ movieSessionId: sessionId, seats: selectedSeats })"
       >
         <Loader v-if="isBookSeatsPending" size="sm" color="white" />
         Забронировать

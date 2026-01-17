@@ -1,4 +1,5 @@
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios';
+import { useAuthStore } from '@/store/auth';
 
 export const setupAuthInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use(
@@ -23,8 +24,6 @@ export const setupAuthInterceptor = (instance: AxiosInstance) => {
           error.config?.url?.includes('/login') || error.config?.url?.includes('/register');
 
         if (!isAuthRequest) {
-          const { useAuthStore } = await import('@/store/modules/auth');
-
           const authStore = useAuthStore();
           authStore.logout();
         }

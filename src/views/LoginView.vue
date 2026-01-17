@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { AxiosError } from 'axios';
-import { useAuthStore } from '@/store/modules/auth';
+import { useAuthStore } from '@/store/auth';
 import AuthForm from '@/components/auth/AuthForm.vue';
 import type { AuthCredentials } from '@/api/types';
 

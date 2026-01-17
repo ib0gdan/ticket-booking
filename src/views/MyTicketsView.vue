@@ -13,7 +13,6 @@ const {
   unpaidBookings,
   futureBookings,
   pastBookings,
-  movieSessionsMap,
   settings,
   isPayPending,
   payBooking,
@@ -34,7 +33,7 @@ const {
       <Loader />
     </div>
 
-    <div v-else>
+    <div v-else class="space-y-8">
       <div
         v-if="bookingsError || settingsError || paymentError"
         class="text-red-500 mb-4 text-center"
@@ -56,7 +55,6 @@ const {
             :booking="booking"
             :movie-title="getMovieTitleByBooking(booking)"
             :cinema-name="getCinemaNameByBooking(booking)"
-            :start-time="movieSessionsMap[booking.movieSessionId]?.startTime"
             :show-payment="true"
             :payment-time-seconds="settings?.bookingPaymentTimeSeconds"
             :is-pay-pending="isPayPending"
@@ -80,7 +78,6 @@ const {
             :booking="booking"
             :movie-title="getMovieTitleByBooking(booking)"
             :cinema-name="getCinemaNameByBooking(booking)"
-            :start-time="movieSessionsMap[booking.movieSessionId]?.startTime"
           />
         </div>
       </section>
@@ -92,14 +89,13 @@ const {
           Нет прошедших билетов.
         </div>
 
-        <div v-else-if="movieSessionsMap" class="space-y-3">
+        <div v-else class="space-y-3">
           <BookingCard
             v-for="booking in pastBookings"
             :key="booking.id"
             :booking="booking"
             :movie-title="getMovieTitleByBooking(booking)"
             :cinema-name="getCinemaNameByBooking(booking)"
-            :start-time="movieSessionsMap[booking.movieSessionId]?.startTime"
           />
         </div>
       </section>

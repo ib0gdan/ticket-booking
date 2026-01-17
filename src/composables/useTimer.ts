@@ -1,6 +1,6 @@
 import { ref, computed, onUnmounted, onMounted } from 'vue';
 
-export function useTimer(startDate: Date | string | undefined, expireAfterSeconds: number) {
+export const useTimer = (startDate: Date | string | undefined, expireAfterSeconds: number) => {
   const parseStartDate = (date?: Date | string) =>
     typeof date === 'string' ? new Date(date) : date;
 
@@ -58,4 +58,4 @@ export function useTimer(startDate: Date | string | undefined, expireAfterSecond
     isExpired,
     formattedTimeLeft,
   };
-}
+};

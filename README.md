@@ -66,9 +66,11 @@ yarn format
 ## Стек технологий
 
 - **Vue 3** (Composition API)
+- **Vue Router**
 - **TypeScript**
 - **Vite**
 - **Pinia**
 - **TanStack Query**
 - **Tailwind CSS**
 - **Axios**
+- **Vue Validate**

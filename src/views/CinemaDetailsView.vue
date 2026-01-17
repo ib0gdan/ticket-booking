@@ -1,66 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useQuery } from '@tanstack/vue-query';
-import queryClient from '@/api/clients/query.client';
-import { CinemaService } from '@/api/services';
-import { formatDateShort, formatTime } from '@/utils/dateTime';
-import type { Session, Movie, Cinema } from '@/api/types';
+import { useCinemaDetails } from '@/composables/useCinemaDetails';
 import Loader from '@/components/common/Loader.vue';
+import CinemaHeader from '@/components/cinema/CinemaHeader.vue';
+import DailySessions from '@/components/cinema/DailySessions.vue';
 
 const route = useRoute();
 const cinemaId = Number(route.params.id);
 
-const cinema = (queryClient.getQueryData(['cinema', cinemaId]) as Cinema) || {};
-const movies = (queryClient.getQueryData(['movies']) as Movie[]) || [];
-
-const {
-  isPending,
-  isError,
-  data: sessions,
-  error,
-} = useQuery({
-  queryKey: ['cinema-sessions', cinemaId],
-  queryFn: async () => {
-    const sessions = await CinemaService.getSessionsByCinemaId(cinemaId);
-    const data = sessions.filter((session) => new Date(session.startTime) >= new Date());
-
-    return data;
-  },
-  enabled: !!cinemaId,
-});
-
-const groupedSessions = computed(() => {
-  if (!sessions.value || !movies.length) return {};
-
-  const groups: Record<string, { movie: Movie; sessions: Session[] }[]> = {};
-
-  const sortedSessions = [...sessions.value].sort(
-    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-  );
-
-  sortedSessions.forEach((session) => {
-    const dateKey = formatDateShort(session.startTime);
-    const movie = movies?.find((m) => m.id === session.movieId);
-
-    if (!movie) return;
-
-    if (!groups[dateKey]) {
-      groups[dateKey] = [];
-    }
-
-    let movieGroup = groups[dateKey].find((g) => g.movie.id === movie.id);
-
-    if (!movieGroup) {
-      movieGroup = { movie, sessions: [] };
-      groups[dateKey].push(movieGroup);
-    }
-
-    movieGroup.sessions.push(session);
-  });
-
-  return groups;
-});
+const { cinema, isPending, isError, error, groupedSessions, hasSessions } =
+  useCinemaDetails(cinemaId);
 </script>
 
 <template>
@@ -74,56 +23,18 @@ const groupedSessions = computed(() => {
     </div>
 
     <div v-else>
-      <div class="text-center mb-16">
-        <h1 class="text-3xl font-light tracking-wide mb-2">{{ cinema.name }}</h1>
-        <p class="text-gray-500 text-sm font-light">{{ cinema.address }}</p>
-      </div>
+      <CinemaHeader :cinema="cinema" />
 
       <div class="space-y-16">
-        <div v-for="(moviesGroup, date) in groupedSessions" :key="date">
-          <div class="border-b border-gray-200 pb-2 mb-8">
-            <span class="text-lg font-medium">{{ date }}</span>
-          </div>
-
-          <div class="space-y-12">
-            <div
-              v-for="group in moviesGroup"
-              :key="group.movie.id"
-              class="flex flex-col md:flex-row gap-8 items-start"
-            >
-              <div class="flex items-center gap-6 md:w-1/2">
-                <div
-                  class="h-16 w-12 overflow-hidden rounded-md bg-gray-100 shrink-0 justify-center"
-                >
-                  <img
-                    v-if="group.movie.posterImage"
-                    :src="group.movie.posterImage"
-                    :alt="group.movie.title"
-                    class="h-full w-full object-cover object-center"
-                  />
-                </div>
-                <span class="text-lg font-light">{{ group.movie.title }}</span>
-              </div>
-
-              <div class="flex flex-wrap gap-3 md:w-1/2">
-                <router-link
-                  :to="{ name: 'Букинг', params: { id: group.movie.id, sessionId: session.id } }"
-                  v-for="session in group.sessions"
-                  :key="session.id"
-                  class="px-4 py-2 border border-gray-300 rounded text-sm hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-200"
-                >
-                  {{ formatTime(session.startTime) }}
-                </router-link>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DailySessions
+          v-for="(moviesGroup, date) in groupedSessions"
+          :key="date"
+          :date="String(date)"
+          :movie-groups="moviesGroup"
+        />
       </div>
 
-      <div
-        v-if="Object.keys(groupedSessions).length === 0"
-        class="text-center text-gray-400 py-12 font-light"
-      >
+      <div v-if="!hasSessions" class="text-center text-gray-400 py-12 font-light">
         Нет доступных сеансов
       </div>
     </div>
