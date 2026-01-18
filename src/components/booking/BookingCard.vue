@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { formatSessionTime } from '@/utils/dateTime';
-import type { BookingDetails } from '@/api/types/booking';
+import type { ExtraInfoBookingDetails } from '@/api/types/booking';
 import PaymentTimer from '@/components/booking/PaymentTimer.vue';
 
 defineProps<{
-  booking: BookingDetails;
+  booking: ExtraInfoBookingDetails;
   movieTitle: string;
   cinemaName: string;
-  startTime?: string | Date;
   showPayment?: boolean;
   paymentTimeSeconds?: number;
   isPayPending?: boolean;
@@ -26,10 +25,8 @@ const emit = defineEmits<{
     <div class="space-y-1 text-sm">
       <div class="text-gray-700">Кино: {{ movieTitle }}</div>
       <div class="text-gray-700">Кинотеатр: {{ cinemaName }}</div>
-      <div v-if="startTime" class="text-gray-700">
-        Время показа: {{ formatSessionTime(startTime) }}
-      </div>
-      <div v-if="booking.seats.length" class="text-gray-700">
+      <div class="text-gray-700">Время показа: {{ formatSessionTime(booking.startTime) }}</div>
+      <div class="text-gray-700">
         Места:
         <span>
           {{

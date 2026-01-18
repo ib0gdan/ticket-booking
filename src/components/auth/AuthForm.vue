@@ -57,7 +57,7 @@ const onSubmit = handleSubmit((values) => {
       </h2>
     </div>
 
-    <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
+    <form class="mt-8 space-y-4" @submit="onSubmit">
       <div>
         <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
           Имя пользователя
@@ -99,10 +99,10 @@ const onSubmit = handleSubmit((values) => {
             placeholder="Введите пароль"
           />
           <button
+            id="showPassword"
             type="button"
             class="absolute inset-y-0 right-3 text-gray-400 hover:text-gray-600"
             @click="showPassword = !showPassword"
-            tabindex="-1"
           >
             <BaseIcon :name="showPassword ? 'eyeSlash' : 'eye'" class="w-5 h-5" />
           </button>
@@ -132,10 +132,10 @@ const onSubmit = handleSubmit((values) => {
             placeholder="Повторите пароль"
           />
           <button
+            id="showPasswordConfirmation"
             type="button"
             class="absolute inset-y-0 right-3 text-gray-400 hover:text-gray-600"
             @click="showPasswordConfirmation = !showPasswordConfirmation"
-            tabindex="-1"
           >
             <BaseIcon :name="showPasswordConfirmation ? 'eyeSlash' : 'eye'" class="w-5 h-5" />
           </button>

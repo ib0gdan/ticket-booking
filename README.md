@@ -1,11 +1,9 @@
 # Ticket Booking App
 
-Приложение для бронирования билетов в кино, разработанное на Vue 3 + TypeScript + Vite.
-
 ## Требования
 
-- Node.js (рекомендуется LTS версия)
-- Yarn (пакетный менеджер)
+- Node.js (LTS версия)
+- npm/yarn package manager
 
 ## Установка
 
@@ -13,7 +11,8 @@
 2. Установите зависимости:
 
 ```bash
-yarn install
+npm install
+# or yarn install
 ```
 
 ## Настройка окружения
@@ -27,10 +26,11 @@ yarn install
 
 ### Режим разработки
 
-Запуск dev-сервера с горячей перезагрузкой (HMR):
+Запуск dev-сервера:
 
 ```bash
-yarn dev
+npm run dev
+# or yarn dev
 ```
 
 ### Сборка для продакшена
@@ -38,7 +38,8 @@ yarn dev
 Сборка приложения с проверкой типов:
 
 ```bash
-yarn build
+npm run build
+# or yarn build
 ```
 
 ### Предпросмотр сборки
@@ -46,21 +47,8 @@ yarn build
 Запуск локального сервера для проверки собранного приложения:
 
 ```bash
-yarn preview
-```
-
-## Линтинг и Форматирование
-
-Запуск ESLint для проверки и исправления ошибок:
-
-```bash
-yarn lint
-```
-
-Форматирование кода с помощью Prettier:
-
-```bash
-yarn format
+npm run preview
+# or yarn preview
 ```
 
 ## Стек технологий

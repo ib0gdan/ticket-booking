@@ -7,6 +7,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [vue(), tailwindcss()],
+    test: {
+      environment: 'happy-dom',
+      include: ['src/**/*.spec.ts'],
+    },
     server: {
       proxy: {
         '/api': {
@@ -15,6 +19,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
